@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Tokyo Revenge</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+    #wrap { position: fixed; inset: 0; overflow: hidden; }
+    #wrap video, #wrap canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+    #wrap video { object-fit: cover; transform: scale(1.17); transform-origin: 50% 100%; }
+    #side { position: fixed; left: 10px; top: 50%; transform: translateY(-50%); z-index: 10; display: flex; flex-direction: column; gap: 6px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; }
+    #side button { all: unset; cursor: pointer; padding: 8px 14px 8px 10px; background: rgba(8,8,12,.82); color: #f2f2f0; border-left: 4px solid #444; letter-spacing: 1.5px; font-size: 15px; text-transform: uppercase; transition: .15s; clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%); }
+    #side button:hover { border-left-color: #19e3ff; background: rgba(25,227,255,.18); }
+    #side button.on { border-left-color: #e8261b; background: rgba(232,38,27,.3); }
+    #side small { color: #8a8a90; font-size: 11px; letter-spacing: 2px; padding-left: 4px; }
+    #side.hide button { display: none; }
+    #side .tog { border-left-color: #888; text-align: center; }
+  </style>
+  <script type="module" crossorigin src="./assets/index-IJXbviTm.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-DVWAzW58.css">
+</head>
+<body>
+  <div id="wrap"><video id="bgvideo" muted loop playsinline autoplay preload="auto"></video></div>
+  <div id="side"></div>
+</body>
+</html>
