@@ -51,8 +51,8 @@ export class Game {
     this.world.addChild(panel, this.reels, frame);
     // meter
     this.meter = new Meter();
-    const home = this.homeBtn = new Sprite(tex('medallion')); home.anchor.set(0.5); home.scale.set(0.4); home.position.set(78, 78); home.eventMode = 'static'; home.cursor = 'pointer';
-    home.on('pointerover', () => gsap.to(home.scale, { x: 0.45, y: 0.45, duration: 0.15 })); home.on('pointerout', () => gsap.to(home.scale, { x: 0.4, y: 0.4, duration: 0.15 }));
+    const home = this.homeBtn = new Sprite(tex('logo')); home.anchor.set(0.5); home.scale.set(0.2); home.position.set(112, 86); home.eventMode = 'static'; home.cursor = 'pointer';
+    home.on('pointerover', () => gsap.to(home.scale, { x: 0.22, y: 0.22, duration: 0.15 })); home.on('pointerout', () => gsap.to(home.scale, { x: 0.2, y: 0.2, duration: 0.15 }));
     home.on('pointerdown', (e: any) => { e.stopPropagation(); if (!this.busy) this.onHome?.(); });
     this.world.addChild(this.meter, home);
     this.chip = new Sprite(tex('mult_2')); this.chip.anchor.set(0.5); this.chip.scale.set(CHIP_W / this.chip.texture.width); this.chip.position.set(CHIP_X, CHIP_Y); this.chip.alpha = 0; this.world.addChild(this.chip);
@@ -95,7 +95,7 @@ export class Game {
       this.fxSmoke.scale.set(k);
       this.fxSmoke.position.set(W - offX + 60 + this.px * 24 + Math.sin(t * 0.4) * 10, H - offY + 40 + this.py * 10 + Math.cos(t * 0.55) * 5);
       this.fxSmoke.alpha = 0.95 + Math.sin(t * 0.8) * 0.04; }
-    if (this.homeBtn) this.homeBtn.position.set(78 + offX, 78 + offY);
+    if (this.homeBtn) this.homeBtn.position.set(112 + offX, 86 + offY);
     this.hero.x = this.heroX + offX + this.px * 26; this.hero.y = 1110 - offY + this.py * 10 + Math.sin(performance.now() / 1400) * 4;
   }
   enter() {

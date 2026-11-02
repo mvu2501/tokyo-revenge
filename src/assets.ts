@@ -10,7 +10,7 @@ export const MANIFEST: Record<string, string> = {
   btn_spin: `${A}ui/btn_spin.png`, btn_spin_down: `${A}ui/btn_spin_down.png`,
   ...Object.fromEntries(['menu', 'auto', 'sound', 'turbo'].flatMap(k => [['btn_' + k, `${A}ui/btn_${k}.png`], ['btn_' + k + '_on', `${A}ui/btn_${k}_on.png`]])),
   btn_bet_minus: `${A}ui/btn_bet_minus.png`, btn_bet_plus: `${A}ui/btn_bet_plus.png`,
-  meter_empty: `${A}ui/meter_empty.png`, meter_full: `${A}ui/meter_full.png`, medallion: `${A}ui/medallion.png`,
+  meter_empty: `${A}ui/meter_empty.png`, meter_full: `${A}ui/meter_full.png`,
   hero: `${A}ui/hero.png`, bg_base: `${A}bg/base.jpg`, intro_bg: `${A}bg/intro.jpg`, bg_bonus: `${A}bg/bonus.jpg`,
   fx_smoke: `${A}fx/smoke_br.png`,
   fx_slash: `${A}fx/slash.jpg`, fx_cutin: `${A}fx/finalslash.jpg`,
