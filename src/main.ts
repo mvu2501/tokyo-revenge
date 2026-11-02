@@ -46,7 +46,7 @@ async function boot() {
 
   let prog = 0; const t0 = performance.now();
   await loadAll(p => { prog = p; });
-  const logo = new Sprite(tex('logo')); logo.anchor.set(1, 1); logo.height = 337.5; logo.scale.x = logo.scale.y; logo.position.set(W - 40, H - 30); load.addChild(logo);
+  const logo = new Sprite(tex('logo')); logo.anchor.set(1, 1); logo.height = 405; logo.scale.x = logo.scale.y; logo.position.set(W - 40, H - 30); load.addChild(logo);
   const logoK = logo.scale.x;
 
   // ---------- INTRO ----------
@@ -87,13 +87,13 @@ async function boot() {
 
   // ---------- SCENES ----------
   const sceneBtns: Record<string, HTMLButtonElement> = {};
-  let scene: SceneName = 'loading'; let busyNav = false; let loadingRun = 0;
+  let scene: SceneName = 'loading'; let busyNav = false; let loadingRun = 0; let loadReady = false; let earlyGo = false;
   const mark = (n: string) => { for (const [k, b] of Object.entries(sceneBtns)) b.classList.toggle('on', k === n); };
   function runLoading(auto: boolean) {
-    const id = ++loadingRun; drawBar(0); status.text = 'LOADING...'; status.alpha = 1; logo.alpha = 0;
+    const id = ++loadingRun; loadReady = false; earlyGo = false; gsap.killTweensOf(status); drawBar(0); status.text = 'LOADING...'; status.alpha = 1; logo.alpha = 0;
     gsap.to(logo, { alpha: 1, duration: 0.8 }); gsap.fromTo(logo.scale, { x: logoK * 1.12, y: logoK * 1.12 }, { x: logoK, y: logoK, duration: 0.9, ease: 'power3.out' });
     const o = { p: 0 }; const dur = Math.max(0.5, 2.4 - (performance.now() - t0) / 1000 * (auto ? 1 : 0));
-    gsap.to(o, { p: 1, duration: dur, ease: 'power1.inOut', onUpdate: () => { if (id === loadingRun) drawBar(o.p); }, onComplete: () => { if (id === loadingRun && auto) gsap.delayedCall(5, () => { if (id === loadingRun && scene === 'loading') show('intro'); }); } });
+    gsap.to(o, { p: 1, duration: dur, ease: 'power1.inOut', onUpdate: () => { if (id === loadingRun) drawBar(o.p); }, onComplete: () => { if (id === loadingRun && auto) { loadReady = true; status.text = 'CLICK TO CONTINUE'; if (earlyGo) { earlyGo = false; goIntro(); return; } gsap.fromTo(status, { alpha: 1 }, { alpha: 0.35, duration: 0.7, yoyo: true, repeat: -1 }); } } });
   }
   function setBg(videoOn: boolean) { video.style.display = videoOn ? 'block' : 'none'; if (videoOn) video.play().catch(() => {}); else video.pause(); }
   async function show(n: SceneName | 'scatter_demo' | 'wild_demo') {
@@ -119,6 +119,11 @@ async function boot() {
     }
     if (n === 'game' && game) { game.root.alpha = 1; game.enter(); }
   }
+  // loading xong → bấm bất kỳ đâu để vào intro (cú bấm này cũng mở khoá âm thanh nên nhạc intro phát ngay)
+  const goIntro = () => { if (scene === 'loading' && loadReady && !busyNav) { loadReady = false; gsap.killTweensOf(status); status.alpha = 1; show('intro'); } };
+  // nghe ở cấp window (không phụ thuộc Pixi): chuột, chạm, phím; bấm sớm khi còn đang load thì vào ngay khi load xong
+  const onUser = (e: Event) => { if (scene !== 'loading') return; if ((e.target as HTMLElement)?.closest?.('#side')) return; if (loadReady) goIntro(); else earlyGo = true; };
+  window.addEventListener('pointerdown', onUser); window.addEventListener('keydown', onUser);
   // bấm vào intro → giật + đổi màu nhẹ (RGB lệch, màu xoay) → mờ → vào game
   app.stage.on('pointerdown', async () => {
     if (scene !== 'intro' || busyNav) return; busyNav = true; initAudio(); gsap.killTweensOf(go); go.alpha = 1;
@@ -140,17 +145,7 @@ async function boot() {
   game.onHome = () => show('intro'); game.onQuit = () => show('loading');
   scaler.setChildIndex(game.root, 0); scaler.setChildIndex(load, 1); scaler.setChildIndex(intro, 2);
   mark('loading'); (window as any).__ready = true;
-  // Trình duyệt chặn tự phát nhạc nếu người chơi chưa chạm vào trang → hiện màn "CLICK TO ENTER", bấm xong mới phát nhạc + chạy loading
-  const startLoading = () => { initAudio(); music.play('intro'); runLoading(true); };
-  if (location.search.includes('nogate')) startLoading();
-  else {
-    const gate = document.createElement('div');
-    gate.style.cssText = 'position:fixed;inset:0;z-index:50;background:#050507;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;cursor:pointer;';
-    gate.innerHTML = '<img src="assets/ui/logo.png" style="width:min(46vw,420px);height:auto"><div id="gt" style="font-family:Bangers,Impact,sans-serif;font-size:clamp(28px,4.4vw,56px);letter-spacing:4px;color:#f2f2f0;-webkit-text-stroke:2px #e8261b;paint-order:stroke fill">CLICK TO ENTER</div><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:18px;color:#888;letter-spacing:2px">SOUND ON</div>';
-    document.body.appendChild(gate);
-    gate.querySelector('#gt')!.animate([{ opacity: 1 }, { opacity: 0.35 }, { opacity: 1 }], { duration: 1400, iterations: Infinity });
-    gate.addEventListener('pointerdown', () => { gate.remove(); startLoading(); }, { once: true });
-  }
+  runLoading(true);
   (window as any).__show = show;
 }
 boot();
