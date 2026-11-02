@@ -139,7 +139,18 @@ async function boot() {
   game = new Game(app, scaler); game.root.visible = false; (window as any).__game = game; fit();
   game.onHome = () => show('intro'); game.onQuit = () => show('loading');
   scaler.setChildIndex(game.root, 0); scaler.setChildIndex(load, 1); scaler.setChildIndex(intro, 2);
-  mark('loading'); runLoading(true); (window as any).__ready = true;
+  mark('loading'); (window as any).__ready = true;
+  // Trình duyệt chặn tự phát nhạc nếu người chơi chưa chạm vào trang → hiện màn "CLICK TO ENTER", bấm xong mới phát nhạc + chạy loading
+  const startLoading = () => { initAudio(); music.play('intro'); runLoading(true); };
+  if (location.search.includes('nogate')) startLoading();
+  else {
+    const gate = document.createElement('div');
+    gate.style.cssText = 'position:fixed;inset:0;z-index:50;background:#050507;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;cursor:pointer;';
+    gate.innerHTML = '<img src="assets/ui/logo.png" style="width:min(46vw,420px);height:auto"><div id="gt" style="font-family:Bangers,Impact,sans-serif;font-size:clamp(28px,4.4vw,56px);letter-spacing:4px;color:#f2f2f0;-webkit-text-stroke:2px #e8261b;paint-order:stroke fill">CLICK TO ENTER</div><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:18px;color:#888;letter-spacing:2px">SOUND ON</div>';
+    document.body.appendChild(gate);
+    gate.querySelector('#gt')!.animate([{ opacity: 1 }, { opacity: 0.35 }, { opacity: 1 }], { duration: 1400, iterations: Infinity });
+    gate.addEventListener('pointerdown', () => { gate.remove(); startLoading(); }, { once: true });
+  }
   (window as any).__show = show;
 }
 boot();
